@@ -42,3 +42,11 @@ func RandomCurrency() string {
 	n := len(currencies)
 	return currencies[rand.Intn(n)]
 }
+
+func RandomAmount() int64 {
+	return RandomInt(1, 100)
+}
+
+func RandomAmountNeg() int64 {
+	return RandomInt(-100, 100)
+}
