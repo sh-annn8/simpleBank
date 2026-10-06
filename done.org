@@ -1,0 +1,5 @@
+1. 从 dbdiagram 设计数据库，并导出为 postgreSQL
+2. 启动 postgres 的 docker 镜像，设置用户密码，创建 simple_bank 数据库。并将 docker 命令整理到 makefile 文件内，可以使用 make xxx 快速执行。
+   使用 table plus 查看数据库。
+3. 设置 migrate，类似数据库的 git，管理 schema 版本，记录更改的 sql 语句，能够快速创建表和删除表。
+4. 编写 sql 语句后使用 sqlc 自动生成 go 代码。
