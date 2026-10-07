@@ -3,3 +3,5 @@
    使用 table plus 查看数据库。
 3. 设置 migrate，类似数据库的 git，管理 schema 版本，记录更改的 sql 语句，能够快速创建表和删除表。
 4. 编写 sql 语句后使用 sqlc 自动生成 go 代码。
+5. 为生成的 go 代码编写测试函数。
+6. 编写transactiony以及测试函数。
