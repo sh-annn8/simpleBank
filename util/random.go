@@ -46,7 +46,3 @@ func RandomCurrency() string {
 func RandomAmount() int64 {
 	return RandomInt(1, 100)
 }
-
-func RandomAmountNeg() int64 {
-	return RandomInt(-100, 100)
-}
