@@ -16,22 +16,22 @@ import (
 func createRandomTransfer(t *testing.T) Transfer {
 	arg := CreateTransferParams{
 		FromAccountID: util.RandomInt(1, 10),
-		ToAccountID: util.RandomInt(1, 100),
+		ToAccountID: util.RandomInt(1, 10),
 		Amount: util.RandomAmount(),
 	}
 
-	entry, err := testQueries.CreateTransfer(context.Background(), arg)
+	transfer, err := testQueries.CreateTransfer(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, entry)
+	require.NotEmpty(t, transfer)
 
-	require.Equal(t, arg.FromAccountID, entry.FromAccountID)
-	require.Equal(t, arg.ToAccountID, entry.ToAccountID)
-	require.Equal(t, arg.Amount, entry.Amount)
+	require.Equal(t, arg.FromAccountID, transfer.FromAccountID)
+	require.Equal(t, arg.ToAccountID, transfer.ToAccountID)
+	require.Equal(t, arg.Amount, transfer.Amount)
 
-	require.NotZero(t, entry.ID)
-	require.NotZero(t, entry.CreatedAt)
+	require.NotZero(t, transfer.ID)
+	require.NotZero(t, transfer.CreatedAt)
 
-	return entry
+	return transfer
 }
 
 func TestCreateTransfer(t *testing.T) {
@@ -39,48 +39,48 @@ func TestCreateTransfer(t *testing.T) {
 }
 
 func TestGetTransfer(t *testing.T) {
-	entry1 := createRandomTransfer(t)
-	entry2, err := testQueries.GetTransfer(context.Background(), entry1.ID)
+	transfer1 := createRandomTransfer(t)
+	transfer2, err := testQueries.GetTransfer(context.Background(), transfer1.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, entry2)
+	require.NotEmpty(t, transfer2)
 
-	require.Equal(t, entry1.ID, entry2.ID)
-	require.Equal(t, entry1.FromAccountID, entry2.FromAccountID)
-	require.Equal(t, entry1.ToAccountID, entry2.ToAccountID)
-	require.Equal(t, entry1.Amount, entry2.Amount)
-	require.WithinDuration(t, entry1.CreatedAt, entry2.CreatedAt, time.Second)
+	require.Equal(t, transfer1.ID, transfer2.ID)
+	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)
+	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)
+	require.Equal(t, transfer1.Amount, transfer2.Amount)
+	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
 }
 
 func TestUpdateTransfer(t *testing.T) {
-	entry1 := createRandomTransfer(t)
+	transfer1 := createRandomTransfer(t)
 
 	arg := UpdateTransferParams{
-		ID: entry1.ID,
+		ID: transfer1.ID,
 		Amount: util.RandomAmount(),
 	}
 
 	err := testQueries.UpdateTransfer(context.Background(), arg)
 	require.NoError(t, err)
-	entry2, err := testQueries.GetTransfer(context.Background(), arg.ID)
+	transfer2, err := testQueries.GetTransfer(context.Background(), arg.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, entry2)
+	require.NotEmpty(t, transfer2)
 
-	require.Equal(t, entry1.ID, entry2.ID)
-	require.Equal(t, entry1.FromAccountID, entry2.FromAccountID)
-	require.Equal(t, entry1.ToAccountID, entry2.ToAccountID)
-	require.Equal(t, arg.Amount, entry2.Amount)
-	require.WithinDuration(t, entry1.CreatedAt, entry2.CreatedAt, time.Second)
+	require.Equal(t, transfer1.ID, transfer2.ID)
+	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)
+	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)
+	require.Equal(t, arg.Amount, transfer2.Amount)
+	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
 }
 
 func TestDeleteTransfer(t *testing.T) {
-	entry1 := createRandomTransfer(t)
-	err := testQueries.DeleteTransfer(context.Background(), entry1.ID)
+	transfer1 := createRandomTransfer(t)
+	err := testQueries.DeleteTransfer(context.Background(), transfer1.ID)
 	require.NoError(t, err)
 
-	entry2, err := testQueries.GetTransfer(context.Background(), entry1.ID)
+	transfer2, err := testQueries.GetTransfer(context.Background(), transfer1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
-	require.Empty(t, entry2)
+	require.Empty(t, transfer2)
 }
 
 /* TestListTransfers
@@ -99,11 +99,11 @@ func TestListTransfers(t *testing.T) {
 		Offset: 5,
 	}
 
-	entrys, err := testQueries.ListTransfers(context.Background(), arg)
+	transfers, err := testQueries.ListTransfers(context.Background(), arg)
 	require.NoError(t, err)
-	require.Len(t, entrys, 5)
+	require.Len(t, transfers, 5)
 
-	for _, transfer := range entrys {
+	for _, transfer := range transfers {
 		require.NotEmpty(t, transfer)
 	}
 }
