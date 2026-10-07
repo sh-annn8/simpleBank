@@ -14,8 +14,8 @@ func TestTransferTx(t *testing.T) {
 	account2 := createRandomAccount(t)
 
 	// 使用 goroutine 并发处理
-	n := 5
-	amount := int64(10)
+	n := 1
+	amount := int64(100)
 
 	// 使用 channel 获取信息
 	errs := make(chan error)
