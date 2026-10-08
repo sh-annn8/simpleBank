@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"context"
 	"testing"
 
@@ -12,9 +13,10 @@ func TestTransferTx(t *testing.T) {
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
+	fmt.Println(">> before:", account1.Balance, account2.Balance)
 
 	// 使用 goroutine 并发处理
-	n := 1
+	n := 2
 	amount := int64(100)
 
 	// 使用 channel 获取信息
@@ -35,6 +37,8 @@ func TestTransferTx(t *testing.T) {
 	}
 
 	// 从 channel 中获取结果并检查
+	existed := make(map[int]bool)
+	
 	for i := 0; i < n; i++ {
 		err := <-errs
 		require.NoError(t, err)
@@ -75,6 +79,38 @@ func TestTransferTx(t *testing.T) {
 		_, err = store.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
 
-		// TODO check account's balance
+		// 检查 accounts
+		fromAccount := result.FromAccount
+		require.NotEmpty(t, fromAccount)
+		require.Equal(t, account1.ID, fromAccount.ID)
+		
+		toAccount := result.ToAccount
+		require.NotEmpty(t, toAccount)
+		require.Equal(t, account2.ID, toAccount.ID)
+
+		// 检查账户经过交易的 balance
+		fmt.Println(">> tx:", fromAccount.Balance, toAccount.Balance)
+		diff1 := account1.Balance - fromAccount.Balance
+		diff2 := toAccount.Balance - account2.Balance
+		require.Equal(t, diff1, diff2)
+		require.True(t, diff1 > 0)
+		require.True(t, diff1 % amount == 0)
+
+		k := int(diff1 / amount)
+		require.True(t, k >= 1 && k <= n)
+		require.NotContains(t, existed, k)
+		existed[k] = true
 	}
+
+	// 检查更新后的 balance
+	updateAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+
+	updateAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
+
+	fmt.Println(">> after:", updateAccount1.Balance, updateAccount2.Balance)
+
+	require.Equal(t, account1.Balance - int64(n) * amount, updateAccount1.Balance)
+	require.Equal(t, account2.Balance + int64(n) * amount, updateAccount2.Balance)
 }
