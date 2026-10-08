@@ -86,27 +86,17 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		}
 
 		// 获取 account, 更新 account 的 balance
-		account1, err := q.GetAccountForUpdate(ctx, arg.FromAccountID)
-		if err != nil {
-			return err
-		}
-
-		result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+		result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
 			ID: arg.FromAccountID,
-			Balance: account1.Balance - arg.Amount,
+			Amount:  -arg.Amount,
 		})
 		if err != nil {
 			return err
 		}
 
-		account2, err := q.GetAccountForUpdate(ctx, arg.ToAccountID)
-		if err != nil {
-			return err
-		}
-
-		result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+		result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
 			ID: arg.ToAccountID,
-			Balance: account2.Balance + arg.Amount,
+			Amount: arg.Amount,
 		})
 		if err != nil {
 			return err
