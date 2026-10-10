@@ -6,22 +6,28 @@ import (
 	"fmt"
 )
 
+// Store 接口，目前有两个实现了接口的结构体: mock 和 sql
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) 	
+}
+
 // 提供 单独运行数据库查询 以及 事务（transaction）查询
-type Store struct {
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
 
 // 创建新 Store
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
 // 搭配 database transaction 运行一个 函数
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -48,7 +54,7 @@ type TransferTxParams struct {
 
 // 一个 transfer 返回的结果
 type TransferTxResult struct {
-	Transfer    Transfer `json:"transfer"`
+	Transfer    Transfer `pjson:"transfer"`
 	FromAccount Account  `json:"from_account"`
 	ToAccount   Account  `json:"to_account"`
 	FromEntry   Entry    `json:"from_entry"`
@@ -56,7 +62,7 @@ type TransferTxResult struct {
 }
 
 
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
