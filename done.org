@@ -8,3 +8,4 @@
 7. 配置了github Action。
 8. 使用 gin 创建 RESTful API 。
 9. 使用 viper 读取配置文件，可以在终端使用环境变量 XXX=xxx make server 启动。
+10. 使用 gomock 为数据库接口生成mockStore，并使用它为GetAccount API编写测试。
