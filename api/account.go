@@ -8,8 +8,8 @@ import (
 )
 
 type createAccountParams struct {
-	Owner    string `json:"owner" bindings:"required"`
-	Currency string `json:"currency" bindings:"required",oneof=USD EUR`
+	Owner    string `json:"owner" binding:"required"`
+	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
