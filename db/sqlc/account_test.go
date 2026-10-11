@@ -14,8 +14,10 @@ import (
 
 // 生成一个数据随机的测试用例，避免测试相互依赖
 func createRandomAccount(t *testing.T) Account {
+	user := createRandomUser(t)
+	
 	arg := CreateAccountParams{
-		Owner: util.RandomOwner(),
+		Owner: user.Username,
 		Balance: util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}

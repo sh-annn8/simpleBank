@@ -36,4 +36,3 @@ RETURNING *;
 -- name: DeleteAccount :execrows
 DELETE FROM accounts
 WHERE id = $1;
-
