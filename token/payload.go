@@ -15,10 +15,10 @@ var (
 
 // Payload 包含 token 中的 payload data
 type Payload struct {
-	ID uuid.UUID `json:"id"`
-	Username string `json:"username"`
-	IssueAt time.Time `json:"issued_at"`
-	ExpiredAt time.Time `json:"expired_at"`
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	IssueAt   time.Time `json:"issued_at"`  // 创建时间
+	ExpiredAt time.Time `json:"expired_at"` // 过期时间
 }
 
 // 根据 username 和 时间 创建一个新的 token payload
@@ -29,9 +29,9 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	}
 
 	payload := &Payload{
-		ID: tokenID,
-		Username: username,
-		IssueAt: time.Now(),
+		ID:        tokenID,
+		Username:  username,
+		IssueAt:   time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
 

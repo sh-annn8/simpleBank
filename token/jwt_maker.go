@@ -18,6 +18,7 @@ type JWTMaker struct {
 
 // 生成一个新的 JWTMaker
 func NewJWTMaker(secretKey string) (Maker, error) {
+	// 检查密钥长度
 	if len(secretKey) < minSecretKeySize {
 		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
 	}
