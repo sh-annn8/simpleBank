@@ -1,7 +1,10 @@
 package api
 
 import (
+	"fmt"
 	db "simpleBank/db/sqlc"
+	"simpleBank/token"
+	"simpleBank/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -10,13 +13,24 @@ import (
 
 // Server 提供 HTTP 请求，拥有一个数据库和 gin 的路由
 type Server struct {
+	config util.Config
 	store db.Store
 	router *gin.Engine
+	tokenMaker token.Maker
 }
 
 // NewServer 创建一个新的 HTTP Server 并初始化 routing
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+	
+	server := &Server{
+		config: config,
+		store: store,
+		tokenMaker: tokenMaker,
+	}
 	router := gin.Default()
 
 	// 验证器
@@ -35,7 +49,7 @@ func NewServer(store db.Store) *Server {
 	router.POST("/transfers", server.createTransfer)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 // 使用 address 启动 HTTP 服务
