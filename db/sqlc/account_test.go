@@ -89,21 +89,24 @@ func TestDeleteAccount(t *testing.T) {
    查看 5 条记录是否为空
 */
 func TestListAccounts(t *testing.T) {
-	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+	var lastAccount Account
+	for range 10 {
+		lastAccount = createRandomAccount(t)
 	}
 
 	// 取第 5-10 条记录
 	arg := ListAccountsParams{
+		Owner: lastAccount.Owner,
 		Limit: 5,
-		Offset: 5,
+		Offset: 0,
 	}
 
 	accounts, err := testQueries.ListAccounts(context.Background(), arg)
 	require.NoError(t, err)
-	require.Len(t, accounts, 5)
+	require.NotEmpty(t, accounts)
 
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
+		require.Equal(t, account.Owner, lastAccount.Owner)
 	}
 }
