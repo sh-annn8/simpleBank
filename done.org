@@ -12,3 +12,5 @@
 11. 增加 transfer API，并通过 validator 注册 currency 验证函数来验证 API 中的currency 。
 12. 增加了 user 表和 API，处理了http的error code，密码通过 bcrypt 进行 hash 加密。
 13. 增加 JWT 和 paseto 两种 token 验证方式。
+14. 增加中间件。
+15. 编写 docker file 以生成 docker 镜像。
